@@ -1,8 +1,17 @@
-
 import 'package:flutter/material.dart';
+import 'objects.dart';
+
 
 class SecondRoute extends StatelessWidget {
-  const SecondRoute({super.key});
+
+  final void Function(Node)? removeNode;
+  final Node node;
+
+    SecondRoute({
+    required this.node,
+    required this.removeNode,
+  }) : super(key: ObjectKey(node));
+
 
   @override
   Widget build(BuildContext context) {

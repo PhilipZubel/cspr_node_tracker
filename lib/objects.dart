@@ -1,13 +1,12 @@
 import 'package:regexed_validator/regexed_validator.dart';
 
 class Node {
-  Node({required this.IP, required this.port, required this.favorite});
+  Node({required this.ip, required this.port, required this.favorite});
   // List<int> IP;
-  String IP;
+  String ip;
   int port;
   bool favorite;
 }
-
 
   bool isValidIP(String s){
     if (s.isEmpty) return false;

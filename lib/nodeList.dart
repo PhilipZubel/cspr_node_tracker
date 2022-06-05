@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'nodeDetails.dart';
 import 'objects.dart';
 import 'nodeItem.dart';
-
-
-
 
 class NodeList extends StatefulWidget {
   const NodeList({Key? key}) : super(key: key);
@@ -17,10 +15,19 @@ class _NodeListState extends State<NodeList> {
   TextEditingController controllerPort = TextEditingController();
   List<Node> nodes = <Node>[];
 
-  @override
-  Widget build(BuildContext context) {
+  void removeNodeItem(Node n) {
+      setState(() {nodes.remove(n);});
+  }
 
-    bool _addNodeItem() {
+  void switchDetails(BuildContext context, Node n){
+      print("tap");
+      Navigator.push(context, MaterialPageRoute(builder: (context) => SecondRoute(
+        node: n,
+        removeNode: removeNodeItem,
+      )));
+    }
+
+  bool _addNodeItem() {
       var ip = controllerIP.text;
       var port = controllerPort.text;
       
@@ -28,20 +35,19 @@ class _NodeListState extends State<NodeList> {
       if(validIP){
           setState(() {
           // nodes.add(Node(name: name, checked: false));
-          nodes = [...nodes, Node(IP: ip, port: int.parse(port), favorite: false)];
+          nodes = [...nodes, Node(ip: ip, port: int.parse(port), favorite: false)];
         });
         controllerIP.clear();
         controllerPort.clear();
 
       }else{
-        var temp1 = isValidIP(ip);
-        var temp2 = isNumeric(port);
         print('Invalid IP address');
       }
       return validIP;
     }
 
-
+  @override
+  Widget build(BuildContext context) {
     Future<void> _displayDialog() async {
       return showDialog<void>(
         context: context,
@@ -54,14 +60,17 @@ class _NodeListState extends State<NodeList> {
             //   decoration: const InputDecoration(hintText: '12'),
             // ),
             content: Column(children: <Widget>[
+                const Text("IP number"),
                 TextField(
                   controller: controllerIP,
-                  decoration: const InputDecoration(),
+                  decoration: const InputDecoration(hintText: "127.0.0.1"),
+                  maxLength: 15,
                 ),
-                const Text(":"),
+                const Text("Port Number"),
                 TextField(
                   controller: controllerPort,
-                  decoration: const InputDecoration(),
+                  decoration: const InputDecoration(hintText: "8000"),
+                  maxLength: 5,
                 ),
               ],
             ),
@@ -74,6 +83,12 @@ class _NodeListState extends State<NodeList> {
                   if(success) {
                     Navigator.of(context).pop();
                   }
+                },
+              ),
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -91,19 +106,10 @@ class _NodeListState extends State<NodeList> {
           children: nodes.map((Node node) {
             return NodeItem(
               node: node,
+              switchDetails: switchDetails,
             );
           }).toList(),
         ),
-        // body: ListView.builder(
-        //   itemCount: nodes.length,
-        //   itemBuilder: (context, index) {
-        //     return GestureDetector(
-        //       child: NodeItem(node: nodes[index]),
-        //       onTap: () => _switchRoute()
-              
-        //     );
-        //   },
-        // ),
         floatingActionButton: FloatingActionButton(
             onPressed: () => _displayDialog(),
             tooltip: 'Add Node',
