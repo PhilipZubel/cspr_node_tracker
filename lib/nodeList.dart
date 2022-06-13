@@ -21,7 +21,8 @@ class _NodeListState extends State<NodeList> {
 
   void switchDetails(BuildContext context, Node n){
       print("tap");
-      Navigator.push(context, MaterialPageRoute(builder: (context) => SecondRoute(
+      print("${n.ip}");
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NodeDetails2(
         node: n,
         removeNode: removeNodeItem,
       )));
