@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -45,7 +46,16 @@ class _NodeDetails2State extends State<NodeDetails2> {
     print("hello");
     String url = '${widget.node.ip}:${widget.node.port}';
     print(url);
-    var response = await http.get(Uri.http(url , 'status'));
+
+    var response = await http.get(Uri.http(url , 'status')).timeout(
+      const Duration(seconds: 1),
+      onTimeout: () {
+        print("fail");
+        return http.Response('Error', 500);
+      },
+      );
+    
+    print(response.statusCode);
     // print(response.body[0]);
     var jsonData = jsonDecode(response.body);
     // List<User> data = [];
@@ -60,7 +70,6 @@ class _NodeDetails2State extends State<NodeDetails2> {
       timestamp: jsonData['last_added_block_info']['timestamp'],
       );
 
-    print(data.uptime);
     return data;
   } 
 
@@ -71,6 +80,7 @@ class _NodeDetails2State extends State<NodeDetails2> {
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.node.ip}:${widget.node.port}'),
+        
       ),
       body: Center(
         // child: ElevatedButton(

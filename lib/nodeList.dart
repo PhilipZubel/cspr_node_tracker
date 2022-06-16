@@ -20,8 +20,8 @@ class _NodeListState extends State<NodeList> {
   }
 
   void switchDetails(BuildContext context, Node n){
-      print("tap");
-      print("${n.ip}");
+      // print("tap");
+      // print("${n.ip}");
       Navigator.push(context, MaterialPageRoute(builder: (context) => NodeDetails2(
         node: n,
         removeNode: removeNodeItem,
@@ -108,6 +108,7 @@ class _NodeListState extends State<NodeList> {
             return NodeItem(
               node: node,
               switchDetails: switchDetails,
+              removeNode: removeNodeItem,
             );
           }).toList(),
         ),
