@@ -1,5 +1,0 @@
-
-
-bool checkStatus() {
-  return true;
-}

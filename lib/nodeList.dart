@@ -100,7 +100,7 @@ class _NodeListState extends State<NodeList> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('CSPR node tracker'),
+          title: const Center(child: Text('CSPR Node Tracker')),
         ),
         body: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8.0),

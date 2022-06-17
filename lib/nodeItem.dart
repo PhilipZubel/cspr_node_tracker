@@ -23,21 +23,10 @@ class _NodeItemState extends State<NodeItem> {
 
   Color? iconColor = Colors.grey;
   
-
-  // Future<bool> _getStatus () async {
-  //   
-  //   var response = await http.get(Uri.http(url , 'status')).timeout(
-  //     const Duration(seconds: 1),
-  //     onTimeout: () {
-  //       return http.Response('Error', 500);
-  //     },
-  //   );
-  //   return true;
-  // }
   void _checkStatus() async {
     String url = '${widget.node.ip}:${widget.node.port}';
     http.Response response = await http.get(Uri.http(url , 'status')).timeout(
-      const Duration(seconds: 1),
+      const Duration(seconds: 5),
       onTimeout: () {
         return http.Response('Error', 500);
       },
@@ -52,18 +41,16 @@ class _NodeItemState extends State<NodeItem> {
         iconColor = Colors.red[500];
       });
     }
-    
   }
 
   @override
   void initState(){
     super.initState();
+    setState(() {
+        iconColor = Colors.grey;
+      });
     _checkStatus();
     final timer = Timer.periodic(const Duration(seconds: 2), (Timer t) => _checkStatus());
-    // var status = _getStatus();
-    // print(status);
-    print("hi");
-    
   }
 
 
@@ -71,12 +58,10 @@ class _NodeItemState extends State<NodeItem> {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        // onNodeChanged(node);
         widget.switchDetails!(context, widget.node);
       },
       leading: CircleAvatar(
         child: Text(widget.node.ip[0]),
-        // backgroundColor: Colors.green[500],
         backgroundColor: iconColor,
         foregroundColor: Colors.white,
       ),

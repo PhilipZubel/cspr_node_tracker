@@ -6,7 +6,7 @@ import 'objects.dart';
 
 import 'package:http/http.dart' as http;
 
-const styleBold = const TextStyle(fontWeight: FontWeight.bold);
+const styleBold = TextStyle(fontWeight: FontWeight.bold);
 
 class NodeData {
   NodeData({
@@ -42,35 +42,42 @@ class NodeDetails2 extends StatefulWidget {
 
 class _NodeDetails2State extends State<NodeDetails2> {
 
-  Future<NodeData> getNodeData() async {
-    print("hello");
+  Future<NodeData?> getNodeData() async {
     String url = '${widget.node.ip}:${widget.node.port}';
-    print(url);
 
     var response = await http.get(Uri.http(url , 'status')).timeout(
       const Duration(seconds: 1),
       onTimeout: () {
-        print("fail");
         return http.Response('Error', 500);
       },
       );
     
-    print(response.statusCode);
-    // print(response.body[0]);
-    var jsonData = jsonDecode(response.body);
-    // List<User> data = [];
+    if (response.statusCode == 200){
+      var jsonData = jsonDecode(response.body);
+      NodeData data = NodeData(
+        uptime: jsonData['uptime'], 
+        // nextUpgrade: jsonData['next_upgrade'], 
+        roundLength: jsonData['round_length'], 
+        blockHeight: jsonData['last_added_block_info']['height'], 
+        timestamp: jsonData['last_added_block_info']['timestamp'],
+        );
 
-    // print( jsonData['last_added_block_info']['height'].runtimeType);
+      return data;
+    }
 
-    NodeData data = NodeData(
-      uptime: jsonData['uptime'], 
-      // nextUpgrade: jsonData['next_upgrade'], 
-      roundLength: jsonData['round_length'], 
-      blockHeight: jsonData['last_added_block_info']['height'], 
-      timestamp: jsonData['last_added_block_info']['timestamp'],
-      );
-
-    return data;
+    String error; 
+    if(response.statusCode == 500){
+      error = "Connection Timeout";
+    }else{
+      error = 'Error - status code ${response.statusCode}';    
+    }
+    return NodeData(
+        uptime: error, 
+        // nextUpgrade: jsonData['next_upgrade'], 
+        roundLength: "", 
+        blockHeight: -1, 
+        timestamp: "",
+        );;
   } 
 
   
@@ -83,19 +90,13 @@ class _NodeDetails2State extends State<NodeDetails2> {
         
       ),
       body: Center(
-        // child: ElevatedButton(
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        //   child: const Text('Go back!'),
-        // ),
-        child: FutureBuilder<NodeData>(
+        child: FutureBuilder<NodeData?>(
           future: getNodeData(),
           builder: (context, snapshot){
             if(snapshot.data == null) {
               return const Center(child: Text("Loading..."));
             } else {
-              if (snapshot.hasData) {
+              if (snapshot.data!.blockHeight != -1) {
                 return Column(
                   children: [
                     Card(
@@ -104,6 +105,14 @@ class _NodeDetails2State extends State<NodeDetails2> {
                       child: ListTile(
                         title: const Text("Server IP", style: styleBold),
                         trailing: Text('${widget.node.ip}:${widget.node.port}', style: styleBold),
+                      ),
+                    ),
+                    Card(
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                      child: ListTile(
+                        title: const Text("Status", style: styleBold),
+                        trailing: Text('Active', style: TextStyle(color: Colors.green[700], fontWeight: FontWeight.bold)),
                       ),
                     ),
                     Card(
@@ -142,8 +151,34 @@ class _NodeDetails2State extends State<NodeDetails2> {
                   ],
                 );
               } 
-                return Text('${snapshot.error}');
-              
+              return Column(
+                children: [
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    child: ListTile(
+                      title: const Text("Server IP", style: styleBold),
+                      trailing: Text('${widget.node.ip}:${widget.node.port}', style: styleBold),
+                    ),
+                  ),
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    child: ListTile(
+                      title: const Text("Incative", style: styleBold),
+                      trailing: Text('Inctive', style: TextStyle(color: Colors.red[700], fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    child: ListTile(
+                      title: const Text("Error", style: styleBold),
+                      trailing: Text(snapshot.data!.uptime),
+                    ),
+                  ),
+                ],
+              );
               }
             },
           )
