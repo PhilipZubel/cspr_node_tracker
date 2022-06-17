@@ -1,0 +1,5 @@
+
+
+bool checkStatus() {
+  return true;
+}
