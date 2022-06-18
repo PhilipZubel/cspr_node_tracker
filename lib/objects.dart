@@ -17,5 +17,5 @@ class Node {
     if(s == null) {
       return false;
     }
-    return int.parse(s) != null && int.parse(s)>0;
+    return int.parse(s) != null && int.parse(s)>=0;
   }

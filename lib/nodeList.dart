@@ -20,48 +20,40 @@ class _NodeListState extends State<NodeList> {
   }
 
   void switchDetails(BuildContext context, Node n){
-      // print("tap");
-      // print("${n.ip}");
       Navigator.push(context, MaterialPageRoute(builder: (context) => NodeDetails2(
         node: n,
         removeNode: removeNodeItem,
       )));
     }
 
-  bool _addNodeItem() {
+  bool isIPValid() {
       var ip = controllerIP.text;
       var port = controllerPort.text;
-      
-      var validIP = isValidIP(ip) && isNumeric(port);
-      if(validIP){
-          setState(() {
-          // nodes.add(Node(name: name, checked: false));
-          nodes = [...nodes, Node(ip: ip, port: int.parse(port), favorite: false)];
-        });
-        controllerIP.clear();
-        controllerPort.clear();
+      return isValidIP(ip) && isNumeric(port);
+  }
 
-      }else{
-        print('Invalid IP address');
-      }
-      return validIP;
-    }
+  void _addNodeItem() {
+      var ip = controllerIP.text;
+      var port = controllerPort.text;
+      setState(() {
+        nodes = [...nodes, Node(ip: ip, port: int.parse(port), favorite: false)];
+      });
+      controllerIP.clear();
+      controllerPort.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
+
     Future<void> _displayDialog() async {
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Add a new node'),
-            // content: TextField(
-            //   controller: controller[0],
-            //   decoration: const InputDecoration(hintText: '12'),
-            // ),
+            title: const Text('Add a new Node'),
             content: Column(children: <Widget>[
-                const Text("IP number"),
+                const Text("IP Number"),
                 TextField(
                   controller: controllerIP,
                   decoration: const InputDecoration(hintText: "127.0.0.1"),
@@ -78,10 +70,10 @@ class _NodeListState extends State<NodeList> {
 
             actions: <Widget>[
               TextButton(
-                child: const Text('Add'),
+                child: const Text('Add') ,
                 onPressed: () {
-                  var success = _addNodeItem();
-                  if(success) {
+                  if(isIPValid()){
+                    _addNodeItem();
                     Navigator.of(context).pop();
                   }
                 },

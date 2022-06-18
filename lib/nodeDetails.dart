@@ -77,10 +77,8 @@ class _NodeDetails2State extends State<NodeDetails2> {
         roundLength: "", 
         blockHeight: -1, 
         timestamp: "",
-        );;
+        );
   } 
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -165,8 +163,8 @@ class _NodeDetails2State extends State<NodeDetails2> {
                     elevation: 2,
                     margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                     child: ListTile(
-                      title: const Text("Incative", style: styleBold),
-                      trailing: Text('Inctive', style: TextStyle(color: Colors.red[700], fontWeight: FontWeight.bold)),
+                      title: const Text("Status", style: styleBold),
+                      trailing: Text('Inactive', style: TextStyle(color: Colors.red[700], fontWeight: FontWeight.bold)),
                     ),
                   ),
                   Card(
