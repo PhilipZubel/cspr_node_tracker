@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'nodeDetails.dart';
-import 'objects.dart';
+import 'objects/node.dart';
 import 'nodeItem.dart';
+
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 
 class NodeList extends StatefulWidget {
   const NodeList({Key? key}) : super(key: key);
@@ -13,16 +16,22 @@ class _NodeListState extends State<NodeList> {
 
   TextEditingController controllerIP = TextEditingController();
   TextEditingController controllerPort = TextEditingController();
-  List<Node> nodes = <Node>[];
 
-  void removeNodeItem(Node n) {
-      setState(() {nodes.remove(n);});
+  late Box<Node> nodeBox;
+
+  @override
+  void initState() {
+    super.initState();
+    nodeBox = Hive.box("node");
+  }
+
+  void removeNodeItem(int idx) {
+      nodeBox.deleteAt(idx);
   }
 
   void switchDetails(BuildContext context, Node n){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NodeDetails2(
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NodeDetails(
         node: n,
-        removeNode: removeNodeItem,
       )));
     }
 
@@ -35,9 +44,8 @@ class _NodeListState extends State<NodeList> {
   void _addNodeItem() {
       var ip = controllerIP.text;
       var port = controllerPort.text;
-      setState(() {
-        nodes = [...nodes, Node(ip: ip, port: int.parse(port), favorite: false)];
-      });
+      Node node = Node(ip: ip, port: int.parse(port), favorite: false);
+      nodeBox.add(node);
       controllerIP.clear();
       controllerPort.clear();
   }
@@ -94,15 +102,62 @@ class _NodeListState extends State<NodeList> {
         appBar: AppBar(
           title: const Center(child: Text('CSPR Node Tracker')),
         ),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          children: nodes.map((Node node) {
-            return NodeItem(
-              node: node,
-              switchDetails: switchDetails,
-              removeNode: removeNodeItem,
-            );
-          }).toList(),
+        // body: ListView(
+        //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+        //   children: nodes.map((Node node) {
+        //     return NodeItem(
+        //       node: node,
+        //       switchDetails: switchDetails,
+        //       removeNode: removeNodeItem,
+        //     );
+        //   }).toList(),
+        // ),
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ValueListenableBuilder<Box<Node>>(
+            valueListenable: nodeBox.listenable(),
+            builder: (BuildContext context, Box<Node> value, Widget? child){
+              if (nodeBox.length > 0) {
+                return ListView.separated(
+                  separatorBuilder: (context, index) => Divider(),
+                  itemCount: nodeBox.length,
+                  itemBuilder: (context, index) {
+                    // print(nodeBox.getAt(index));
+                    return NodeItem(
+                      node: nodeBox.getAt(index)!,
+                      switchDetails: switchDetails,
+                      removeNode: removeNodeItem,
+                      index: index,
+                    );
+                    // return ListTile(
+                    //   title: Text(nodeBox.getAt(index)!.ip),
+                    //   trailing: IconButton(
+                    //     icon: Icon(Icons.delete),
+                    //     onPressed: () => removeNodeItem(index),
+                    //   ),
+                    // );
+                  },
+                );
+              };
+              return const Text("No node servers added yet.");
+            },
+            // builder: (context, nodes, child) {
+            //   return ListView.builder(
+            //     shrinkWrap: true,
+            //     itemCount: nodes.length,
+            //     itemBuilder: (context, index) {
+            //       final node = nodes.getAt(index);
+            //       return NodeItem(
+            //         node: node!,
+            //         switchDetails: switchDetails,
+            //         removeNode: removeNodeItem,
+            //         index: index,
+            //       );
+            //     },
+            //   );
+            // },
+            
+          ),
         ),
         floatingActionButton: FloatingActionButton(
             onPressed: () => _displayDialog(),

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'objects.dart';
+import 'objects/node.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -11,13 +11,11 @@ const styleBold = TextStyle(fontWeight: FontWeight.bold);
 class NodeData {
   NodeData({
     required this.uptime, 
-    // required this.nextUpgrade, 
     required this.roundLength,
     required this.blockHeight,
     required this.timestamp,
     });
   String uptime;
-  // String nextUpgrade;
   String roundLength;
   int blockHeight;
   String timestamp;
@@ -26,21 +24,19 @@ class NodeData {
 
 // 78.159.84.140
 
-class NodeDetails2 extends StatefulWidget {
-  final void Function(Node)? removeNode;
+class NodeDetails extends StatefulWidget {
   final Node node;
 
-  const NodeDetails2({
+  const NodeDetails({
     Key? key,
     required this.node,
-    required this.removeNode,
   }) : super(key: key);
 
   @override
-  State<NodeDetails2> createState() => _NodeDetails2State();
+  State<NodeDetails> createState() => _NodeDetailsState();
 }
 
-class _NodeDetails2State extends State<NodeDetails2> {
+class _NodeDetailsState extends State<NodeDetails> {
 
   Future<NodeData?> getNodeData() async {
     String url = '${widget.node.ip}:${widget.node.port}';
@@ -77,8 +73,8 @@ class _NodeDetails2State extends State<NodeDetails2> {
         roundLength: "", 
         blockHeight: -1, 
         timestamp: "",
-        );
-  } 
+        );;
+  }  
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,16 @@
 import 'package:regexed_validator/regexed_validator.dart';
 
+import 'package:hive/hive.dart';
+part 'node.g.dart';
+
+@HiveType(typeId: 0)
 class Node {
   Node({required this.ip, required this.port, required this.favorite});
-  // List<int> IP;
+  @HiveField(0)
   String ip;
+  @HiveField(1)
   int port;
+  @HiveField(2)
   bool favorite;
 }
 
@@ -14,8 +20,5 @@ class Node {
   }
 
   bool isNumeric(String s) {
-    if(s == null) {
-      return false;
-    }
-    return int.parse(s) != null && int.parse(s)>=0;
+    return int.parse(s)>=0;
   }

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'objects.dart';
+import 'objects/node.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
 class NodeItem extends StatefulWidget {
 
   final void Function(BuildContext, Node)? switchDetails;
-  final void Function(Node)? removeNode;
+  final void Function(int)? removeNode;
   final Node node;
+  final int index;
 
   NodeItem({
     required this.node,
     required this.switchDetails, 
-    required this.removeNode,
+    required this.removeNode, 
+    required this.index,
   }) : super(key: ObjectKey(node));
 
   @override
@@ -68,7 +70,7 @@ class _NodeItemState extends State<NodeItem> {
       title: Text('${widget.node.ip}:${widget.node.port}'),
       trailing: IconButton(
         icon: Icon(Icons.delete),
-        onPressed: () {widget.removeNode!(widget.node);},
+        onPressed: () {widget.removeNode!(widget.index);},
         ),
     );
   }
